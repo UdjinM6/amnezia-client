@@ -69,7 +69,7 @@ jobs:
 # ------------------------------------------------------
 
   Build-Linux-Ubuntu:
-    runs-on: android-runner
+    runs-on: ${{ github.event.repository.fork && 'ubuntu-latest' || 'android-runner' }}
 
     needs: Bake-Prebuilts-Linux
     if: ${{ !cancelled() }}
@@ -692,7 +692,7 @@ jobs:
 # ------------------------------------------------------
 
   Bake-Prebuilts-Android:
-    runs-on: android-runner
+    runs-on: ${{ github.event.repository.fork && 'ubuntu-latest' || 'android-runner' }}
     needs: Detect-Changes
     if: needs.Detect-Changes.outputs.recipes_changed == 'true'
 
@@ -746,7 +746,7 @@ jobs:
 # ------------------------------------------------------
 
   Build-Android:
-    runs-on: android-runner
+    runs-on: ${{ github.event.repository.fork && 'ubuntu-latest' || 'android-runner' }}
 
     needs: Bake-Prebuilts-Android
     if: ${{ !cancelled() }}
