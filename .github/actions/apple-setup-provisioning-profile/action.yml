@@ -5,13 +5,14 @@ description: Decodes and installs provisioning profiles
 
 inputs:
   provisioning_profile_base64:
-    description: Base64-encoded provisioning profile
+    description: Base64-encoded provisioning profile. If empty, the install is skipped
     required: true
 
 runs:
   using: composite
   steps:
     - name: Setup provisioning profile
+      if: ${{ inputs.provisioning_profile_base64 != '' }}
       shell: bash
       run: |
         PROFILES_DIR="$HOME/Library/MobileDevice/Provisioning Profiles"
