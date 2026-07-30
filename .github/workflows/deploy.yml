@@ -5,6 +5,12 @@ on:
     branches:
       - '**'
 
+# Supersede an in-flight run when a branch is pushed again. Runs on the default
+# branch are left alone, so prebuilt/artifact publishing is never interrupted.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/dev' }}
+
 env:
   QT_MIRROR: https://mirrors.ocf.berkeley.edu/qt/ # https://download.qt.io/static/mirrorlist/
 
