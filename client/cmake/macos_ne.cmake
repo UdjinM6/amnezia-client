@@ -156,6 +156,13 @@ message(${QtCore_location})
 
 get_filename_component(QT_BIN_DIR_DETECTED "${QtCore_location}/../../../../../bin" ABSOLUTE)
 
+# macdeployqt rewrites the rpaths of the Qt libraries it copies in, which
+# invalidates their signatures. Hand it the same identity Xcode uses so it
+# re-signs them properly instead of leaving them however it found them.
+if(DEPLOY)
+    set(MACDEPLOYQT_CODESIGN "-codesign=$<IF:$<CONFIG:Debug>,Apple Development,Apple Distribution>")
+endif()
+
 add_custom_command(TARGET ${PROJECT} POST_BUILD
-    COMMAND ${QT_BIN_DIR_DETECTED}/macdeployqt $<TARGET_BUNDLE_DIR:AmneziaVPN> -appstore-compliant -qmldir=${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${QT_BIN_DIR_DETECTED}/macdeployqt $<TARGET_BUNDLE_DIR:AmneziaVPN> -appstore-compliant -qmldir=${CMAKE_CURRENT_SOURCE_DIR} ${MACDEPLOYQT_CODESIGN}
 )
