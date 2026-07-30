@@ -678,9 +678,10 @@ jobs:
       run: pip install "conan==2.28.0"
 
     - name: 'Build project'
-      run: |
-        export QT_BIN_DIR="${{ runner.temp }}/Qt/${{ env.QT_VERSION }}/macos/bin"
-        bash deploy/build_macos_ne.sh
+      env:
+        QT_INSTALL_DIR: ${{ runner.temp }}
+      shell: bash
+      run: deploy/build.sh -t macos-ne
 
     - name: 'Upload unpacked artifact'
       uses: actions/upload-artifact@v4
