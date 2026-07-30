@@ -11,7 +11,7 @@ inputs:
     description: Password to the keychain
     required: true
   cert-base64:
-    description: Base64-encoded certificate
+    description: Base64-encoded certificate. If empty, the import is skipped
     required: true
   cert-password:
     description: Certificate password
@@ -21,6 +21,7 @@ runs:
   using: composite
   steps:
     - name: Create keychain
+      if: ${{ inputs.cert-base64 != '' }}
       shell: bash
       env:
         KEYCHAIN_PATH: ${{ inputs.keychain-path }}
