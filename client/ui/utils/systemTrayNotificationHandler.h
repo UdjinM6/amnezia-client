@@ -34,7 +34,9 @@ private:
     void showHideWindow();
 
     void setTrayState(Vpn::ConnectionState state);
+#ifndef Q_OS_MAC
     void onTrayActivated(QSystemTrayIcon::ActivationReason reason);
+#endif
 
     void setTrayIcon(const QString &iconPath);
 

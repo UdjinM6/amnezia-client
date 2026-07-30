@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QString>
 
+Q_FORWARD_DECLARE_OBJC_CLASS(NSStatusItem);
+
 class QMenu;
 
 class MacOSStatusIcon final : public QObject {
@@ -23,7 +25,7 @@ class MacOSStatusIcon final : public QObject {
   void showMessage(const QString& title, const QString& message);
 
  private:
-  void* m_statusItem = nullptr;
+  NSStatusItem* m_statusItem = nullptr;
 };
 
 #endif  // MACOSSTATUSICON_H

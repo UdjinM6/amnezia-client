@@ -87,6 +87,7 @@ void SystemTrayNotificationHandler::updateWebsiteUrl(const QString &newWebsiteUr
 void SystemTrayNotificationHandler::setTrayIcon(const QString &iconPath)
 {
 #ifdef Q_OS_MAC
+    Q_ASSERT(m_statusIcon);
     m_statusIcon->setIcon(iconPath);
 #else
     QIcon trayIconMask(QPixmap(iconPath).scaled(128,128));
@@ -95,12 +96,14 @@ void SystemTrayNotificationHandler::setTrayIcon(const QString &iconPath)
 #endif
 }
 
+#ifndef Q_OS_MAC
 void SystemTrayNotificationHandler::onTrayActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if(reason == QSystemTrayIcon::DoubleClick || reason == QSystemTrayIcon::Trigger) {
         emit raiseRequested();
     }
 }
+#endif
 
 void SystemTrayNotificationHandler::setTrayState(Vpn::ConnectionState state)
 {
@@ -166,7 +169,9 @@ void SystemTrayNotificationHandler::notify(NotificationHandler::Message type,
   Q_UNUSED(type);
 
 #ifdef Q_OS_MAC
+  // UNUserNotificationCenter has no per-notification display timeout.
   Q_UNUSED(timerMsec);
+  Q_ASSERT(m_statusIcon);
   m_statusIcon->showMessage(title, message);
 #else
   QIcon icon(ConnectedTrayIconName);
