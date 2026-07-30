@@ -684,7 +684,7 @@ jobs:
       env:
         QT_INSTALL_DIR: ${{ runner.temp }}
       shell: bash
-      run: deploy/build.sh -t macos-ne
+      run: deploy/build.sh -t macos-ne --deploy ${{ github.event.repository.fork && 'false' || 'true' }}
 
     - name: 'Upload unpacked artifact'
       uses: actions/upload-artifact@v4

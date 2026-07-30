@@ -32,6 +32,7 @@ while [[ $# -gt 0 ]]; do
         --installer)        installers+=("$2");      shift 2 ;;
         --abi)              abis+=("$2");            shift 2 ;;
         --sign)             : ${SIGN:=true};         shift   ;;
+        --deploy)           : ${DEPLOY_OPT:="$2"};   shift 2 ;;
         --aab)              : ${BUILD_AAB=true};     shift   ;;
         --help|-h|?)
             echo "Usage: $0 [options]"
@@ -44,6 +45,7 @@ while [[ $# -gt 0 ]]; do
             echo "  --installer <name|all>    - specify an installer(s) to build. allowed to be used multiple times"
             echo "  --abi                     - specify Android ABIs for target to build for. all by default"
             echo "  --sign                    - whether to sign the resulting files. only appicable to Android"
+            echo "  --deploy <true|false>     - whether to build a signed, deployable bundle. true by default. only applicable to Apple targets"
             echo "  --aab                     - whether to build AAB. only applicable to Android"
             exit 0
             ;;
@@ -183,6 +185,19 @@ if [[ "$TARGET" == "android" ]]; then
 fi
 
 : ${CMAKE_BUILD_TYPE:=Release}
+: ${DEPLOY_OPT:=true}
+
+# A non-deploy build has no signing identity to resolve, so drop DEPLOY and tell
+# Xcode not to sign anything.
+CODESIGN_ARGS=()
+if [[ "$DEPLOY_OPT" != "true" ]]; then
+    DEPLOY=""
+    CODESIGN_ARGS=(
+        "-DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED=NO"
+        "-DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED=NO"
+        "-DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="
+    )
+fi
 
 args=()
 [[ -n "$CMAKE_GENERATOR" ]]           && args+=("-G" "$CMAKE_GENERATOR")
@@ -193,6 +208,7 @@ args=()
 [[ -n "$CMAKE_OSX_SYSROOT" ]]         && args+=("-DCMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT")
 [[ -n "$MACOS_NE" ]]                  && args+=("-DMACOS_NE=$MACOS_NE")
 [[ -n "$DEPLOY" ]]                    && args+=("-DDEPLOY=$DEPLOY")
+[[ ${#CODESIGN_ARGS[@]} -gt 0 ]]      && args+=("${CODESIGN_ARGS[@]}")
 [[ -n "$ANDROID_ABI" ]]               && args+=("-DANDROID_ABI=$ANDROID_ABI")
 [[ -n "$ANDROID_SDK_ROOT" ]]          && args+=("-DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT")
 [[ -n "$ANDROID_NDK_ROOT" ]]          && args+=("-DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT")
