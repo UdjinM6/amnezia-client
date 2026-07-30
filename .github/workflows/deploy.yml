@@ -66,7 +66,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     needs: Bake-Prebuilts-Linux
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
 
     env:
       QT_VERSION: 6.10.1
@@ -173,7 +173,7 @@ jobs:
     runs-on: windows-latest
 
     needs: Bake-Prebuilts-Windows
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
 
     env:
       QT_VERSION: 6.10.1
@@ -309,7 +309,7 @@ jobs:
     runs-on: macos-latest
 
     needs: Bake-Prebuilts-iOS
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
 
     env:
       QT_VERSION: 6.10.1
@@ -457,7 +457,7 @@ jobs:
     runs-on: macos-15
 
     needs: Bake-Prebuilts-MacOS
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
 
     env:
       QT_VERSION: 6.10.1
@@ -602,7 +602,7 @@ jobs:
     runs-on: macos-26
 
     needs: Bake-Prebuilts-MacOS-NE
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
 
     env:
       QT_VERSION: 6.10.1
@@ -746,7 +746,7 @@ jobs:
     runs-on: android-runner
 
     needs: Bake-Prebuilts-Android
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
 
     env:
       ANDROID_PLATFORM: android-28
