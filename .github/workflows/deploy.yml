@@ -690,7 +690,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: AmneziaVPN_MacOS_unpacked
-        path: deploy/build/client/AmneziaVPN.app
+        path: deploy/build/client/Release/AmneziaVPN.app
         retention-days: 7
 
 # ------------------------------------------------------
