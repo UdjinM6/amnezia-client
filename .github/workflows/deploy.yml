@@ -479,8 +479,11 @@ jobs:
         submodules: 'true'
         fetch-depth: 10
 
+    # Forks have no signing secrets. Skipping this leaves the keychain path
+    # empty, which is what tells CPack the installer is deliberately unsigned.
     - uses: ./.github/actions/apple-setup-keychain
       id: setup-keychain
+      if: ${{ !github.event.repository.fork }}
       with:
         keychain-password: ${{ env.KEYCHAIN_PASSWORD }}
 
