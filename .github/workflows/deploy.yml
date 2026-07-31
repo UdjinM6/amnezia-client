@@ -365,6 +365,12 @@ jobs:
       with:
         xcode-version: '26.0'
 
+    # Xcode 26 ships platforms separately from the SDK. The runner image has the
+    # iOS SDK but not the platform, and ibtool refuses to compile storyboards
+    # without it: "iOS 26.0 Platform Not Installed".
+    - name: 'Install iOS platform'
+      run: xcodebuild -downloadPlatform iOS
+
     - name: 'Install desktop Qt'
       uses: jurplel/install-qt-action@v3
       with:
@@ -403,8 +409,11 @@ jobs:
         APPSTORE_CONNECT_KEY_ID: ${{ secrets.APPSTORE_CONNECT_KEY_ID }}
         APPSTORE_CONNECT_ISSUER_ID: ${{ secrets.APPSTORE_CONNECT_ISSUER_ID }}
         APPSTORE_CONNECT_PRIVATE_KEY: ${{ secrets.APPSTORE_CONNECT_PRIVATE_KEY }}
+      # Without an explicit shell the default is `bash -e` with no pipefail, so
+      # the sed filters below would mask a failing build.sh and report success.
+      shell: bash
       run: |
-        sh deploy/build.sh -t ios | \
+        sh deploy/build.sh -t ios --deploy ${{ github.event.repository.fork && 'false' || 'true' }} | \
           sed -e '/-Xcc -DPROD_AGW_PUBLIC_KEY/,/-Xcc/ { /-Xcc/!d; }' -e '/-Xcc -DPROD_AGW_PUBLIC_KEY/d' | \
           sed -e '/-Xcc -DDEV_AGW_PUBLIC_KEY/,/-Xcc/ { /-Xcc/!d; }' -e '/-Xcc -DDEV_AGW_PUBLIC_KEY/d' | \
           sed -e '/-DPROD_AGW_PUBLIC_KEY/,/-D/ { /-D/!d; }' -e '/-DPROD_AGW_PUBLIC_KEY/d' | \
